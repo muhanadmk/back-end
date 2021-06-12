@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const stuffRoutes = require('./routes/stuff');
+const userRoutes = require('./routes/user');
 const app = express();
 
 mongoose.connect('mongodb+srv://muhanand:Qz4JQy6Gmew3cen@cluster0.hspsk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
@@ -21,6 +22,7 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.json());
 
-app.use('/api/sauces', stuffRoutes);
+// app.use('/api/sauces', stuffRoutes);
+app.use('/api/auth', userRoutes);
 
 module.exports = app;
