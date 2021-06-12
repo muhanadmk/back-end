@@ -22,7 +22,7 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.json());
 
-// app.use('/api/sauces', stuffRoutes);
+app.use('/api/sauces', stuffRoutes);
 app.use('/api/auth', userRoutes);
 
 module.exports = app;
