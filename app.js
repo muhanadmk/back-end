@@ -3,6 +3,12 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const app = express();
 
+mongoose.connect('mongodb+srv://muhanand:Qz4JQy6Gmew3cen@cluster0.hspsk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+  { useNewUrlParser: true,
+    useUnifiedTopology: true })
+  .then(() => console.log('Connexion à MongoDB réussie !'))
+  .catch(() => console.log('Connexion à MongoDB échouée !'));
+
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
@@ -10,11 +16,6 @@ app.use((req, res, next) => {
   next();
 });
 
-mongoose.connect('mongodb+srv://muhanand:Qz4JQy6Gmew3cen@cluster0.hspsk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
-  { useNewUrlParser: true,
-    useUnifiedTopology: true })
-  .then(() => console.log('Connexion à MongoDB réussie !'))
-  .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 app.use(bodyParser.json());
 
