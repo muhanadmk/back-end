@@ -1,18 +1,41 @@
 const Thing = require('../models/Thing');
 const fs = require('fs');
+const { join } = require('path');
+const { json } = require('body-parser');
 
 exports.createThing = (req, res, next) => {
-  const thingObject = JSON.parse(req.body.thing);
-  delete thingObject._id;
+  const things = JSON.parse(req.body.sauce);
+  things.imageUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+  console.log(things);
   const thing = new Thing({
-    ...thingObject,
-    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+   ...things
   });
-  thing.save()
-    .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
-    .catch(error => res.status(400).json({ error }));
-    next()
+  thing.save().then(
+    () => {
+      res.status(201).json({
+        message: 'Post saved successfully!'
+      });
+    }
+  ).catch(
+    (error) => {
+      res.status(400).json({
+        error: error
+      });
+    }
+  );
 };
+// exports.createThing = (req, res, next) => {
+//   const things = JSON.parse(req.body.sauce);
+//   console.log(things);
+//   const thing = new Thing(
+//     things.imageUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+//     ...things,
+//     console.log(Thing)
+//   );
+//   Thing.save()
+//     .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
+//     .catch(error => res.status(400).json({ error }));
+// };
 
 exports.getOneThing = (req, res, next) => {
   Thing.findOne({
