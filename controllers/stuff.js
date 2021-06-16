@@ -24,18 +24,6 @@ exports.createThing = (req, res, next) => {
     }
   );
 };
-// exports.createThing = (req, res, next) => {
-//   const things = JSON.parse(req.body.sauce);
-//   console.log(things);
-//   const thing = new Thing(
-//     things.imageUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
-//     ...things,
-//     console.log(Thing)
-//   );
-//   Thing.save()
-//     .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
-//     .catch(error => res.status(400).json({ error }));
-// };
 
 exports.getOneThing = (req, res, next) => {
   Thing.findOne({
@@ -56,7 +44,7 @@ exports.getOneThing = (req, res, next) => {
 exports.modifyThing = (req, res, next) => {
   const thingObject = req.file ?
     {
-      ...JSON.parse(req.body.thing),
+      ...JSON.parse(req.body.sauce),
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     } : { ...req.body };
   Thing.updateOne({ _id: req.params.id }, { ...thingObject, _id: req.params.id })
