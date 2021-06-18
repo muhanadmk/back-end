@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
+const mask = require('json-mask');
 const User = require('../models/User');
 
 exports.signup = (req, res, next) => {
@@ -32,7 +32,7 @@ exports.login = (req, res, next) => {
             userId: user._id,
             token: jwt.sign(
               { userId: user._id },
-              'RANDOM_TOKEN_SECRET',
+              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MGM4ZTUzNTU3Y2VkNDM3NmM3M2IyNmEiLCJpYXQiOjE2MjM4NDEzMDQsImV4cCI6MTYyMzkyNzcwNH0.id-RqjdpjYBgujJyn_RYDQxjMT08pKnuoat4vWLyMew',
               { expiresIn: '24h' }
             )
           });
