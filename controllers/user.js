@@ -1,13 +1,17 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const mask = require('json-mask');
+const crypto = require('crypto');
 const User = require('../models/User');
 
 exports.signup = (req, res, next) => {
+ const secret = process.env.HASHE_EMAIl;
+  const hashEmail = crypto.createHmac('sha256',secret)
+				   .update(req.body.email)
+				   .digest('hex');
   bcrypt.hash(req.body.password, 10)
     .then(hash => {
       const user = new User({
-        email: req.body.email,
+        email: hashEmail,
         password: hash
       });
       user.save()
@@ -18,7 +22,11 @@ exports.signup = (req, res, next) => {
 };
 
 exports.login = (req, res, next) => {
-  User.findOne({ email: req.body.email })
+  const secret = process.env.HASHE_EMAIl;
+  const hashEmail = crypto.createHmac('sha256',secret)
+				   .update(req.body.email)
+				   .digest('hex');
+  User.findOne({ email: hashEmail })
     .then(user => {
       if (!user) {
         return res.status(401).json({ error: 'Utilisateur non trouvé !' });
@@ -32,7 +40,7 @@ exports.login = (req, res, next) => {
             userId: user._id,
             token: jwt.sign(
               { userId: user._id },
-              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MGM4ZTUzNTU3Y2VkNDM3NmM3M2IyNmEiLCJpYXQiOjE2MjM4NDEzMDQsImV4cCI6MTYyMzkyNzcwNH0.id-RqjdpjYBgujJyn_RYDQxjMT08pKnuoat4vWLyMew',
+              process.env.SECRET_KEY_JWT,
               { expiresIn: '24h' }
             )
           });
