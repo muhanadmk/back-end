@@ -17,7 +17,7 @@ router.put('/:id', auth, multer, stuffCtrl.modifyThing);
 router.delete('/:id', auth, stuffCtrl.deleteThing);
 
 //Like Dislake de sauce
-router.post('/:id/like', auth, multer, stuffCtrl.aimeSauce);
+router.post('/:id/like', auth, multer, stuffCtrl.likeSauce);
 
 
 

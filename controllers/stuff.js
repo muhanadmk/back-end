@@ -87,47 +87,58 @@ exports.getAllStuff = (req, res, next) => {
   );
 };
 
-exports.aimeSauce = (req, res, next) => {
-
-  // const reqBody = req.body;
-  const like = req.body.like;
-  const userId = req.body.userId;
-
+exports.likeSauce = (req, res, next) => {
   Thing.findOne({ _id: req.params.id })
-  
-
-  .then(sauce => {
-      //Si le users like la sauce il se passera:
-      switch(like) {
-          case +1:
-            Thing.updateOne( //Choisir l'article en question associé au user en question et envoyé le +1 Si user aime l'article
-                  {_id: req.params.id},
-                  {$push: {userLiked: userId}, $inc: {like: +1}},
-              )
-          .then(() => res.status(200).json({ message: "Sauce Liké !" }))
-          .catch(error => res.status(400).json({ error }));
-          break;
-
-          case -1:
-            Thing.updateOne( //Choisir l'article en question associé au user en question et envoyé le -1 si user n'aime pas l'article
-                  {_id: req.params.id},
-                  {$push: {userDisliked: userId}, $inc: {dislike: -1}},
-                  console.log('Bonjour je suis -1')
-              )
-          .then(() => res.status(200).json({ message: "Sauce Disliké !"}))
-          .catch(error => res.status(400).json({ error }));
-          break;
-
-
-          case 0:
-            Thing.updateOne( //Choisir l'article en question associé au user en question et envoyé le 0 si user annule le choi qu'il a fait d'aimer ou non
-                  {_id: req.params.id},
-                  {$push: {userCancel: userId}, $inc: {cancel: 0}},
-                  console.log('Oui jannule')
-              )
-              .then(() => res.status(200).json({ message: "Like/Dislike annulé !"}))
-          .catch(error => res.status(400).json({ error }));
-          break;
-      }
-  });
+ .then(sauce => {
+     switch (req.body.like) {
+       // le cas de dislike
+         case -1:
+             Thing.updateOne({ _id: req.params.id }, {
+               //ajouetr dilike qui singfi -1  et le user qui fait au usersDisliked
+                 $inc: {dislikes:1},
+                 $push: {usersDisliked: req.body.userId},
+                 _id: req.params.id
+             })
+                 .then(() => res.status(201).json({ message: 'Dislike ajouté !'}))
+                 .catch( error => res.status(400).json({ error }))
+             break;
+             //le cas d'annulation pour un like ou pour un dislike
+         case 0:
+         //si on trouve l’user dans le usersLiked on va le supprimer et supprimer le like egalment
+            if (sauce.usersLiked.find(user => user === req.body.userId)) {
+              Thing.updateOne({ _id : req.params.id }, {
+                  $inc: {likes:-1},
+                  $pull: {usersLiked: req.body.userId},
+                  _id: req.params.id
+              })
+              .then(() => res.status(201).json({message: ' Like retiré !'}))
+              .catch( error => res.status(400).json({ error }))
+             }
+          //si on trouve l’user dans le usersDisliked on va le supprimer et supprimer le dislike egalment
+             if (sauce.usersDisliked.find(user => user === req.body.userId)) {
+                 Thing.updateOne({ _id : req.params.id }, {
+                     $inc: {dislikes:-1},
+                     $pull: {usersDisliked: req.body.userId},
+                     _id: req.params.id
+                 })
+                .then(() => res.status(201).json({message: ' Dislike retiré !'}))
+                .catch( error => res.status(400).json({ error }));
+             }
+             break;
+             //si le cas d'un like
+         case 1:
+             Thing.updateOne({ _id: req.params.id }, {
+               //ajouetr like qui singfi +1  et le user qui fait au usersliked
+                 $inc: { likes:1},
+                 $push: { usersLiked: req.body.userId},
+                 _id: req.params.id
+             })
+              .then(() => res.status(201).json({ message: 'Like ajouté !'}))
+              .catch( error => res.status(400).json({ error }));
+             break;
+         default:
+             return res.status(500).json({ error });
+     }
+ })
+ .catch(error => res.status(500).json({ error }))
 };
